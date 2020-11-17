@@ -1,0 +1,28 @@
+'use strict'
+
+const validateThat = require('../../validator/ParameterValidator').validateThat
+
+/**
+ * Parent class of all annotations expressions
+ * @abstract
+ * @hideconstructor
+ */
+class EdmAnnotationExpression {
+  constructor (kind) {
+    validateThat('kind', kind)
+      .truthy()
+      .typeOf('string')
+
+    this._kind = kind
+  }
+
+  /**
+   * Return the kind of the expression.
+   * @returns {CsdlAnnotationExpression.kinds} the kind of the expression
+   */
+  getKind () {
+    return this._kind
+  }
+}
+
+module.exports = EdmAnnotationExpression

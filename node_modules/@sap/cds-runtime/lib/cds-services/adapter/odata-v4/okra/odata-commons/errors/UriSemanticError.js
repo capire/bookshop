@@ -1,0 +1,48 @@
+'use strict'
+
+const util = require('util')
+const AbstractError = require('./AbstractError')
+
+/**
+ * UriSemanticError which is mainly thrown by the UriParser when there is a problem with
+ * interpreting the incoming url.
+ *
+ * @extends AbstractError
+ */
+class UriSemanticError extends AbstractError {
+  /**
+   * Creating an instance of UriSemanticError.
+   *
+   * @param {string} message The message of the error
+   * @param {...string} parameters parameters for the message
+   */
+  constructor (message, ...parameters) {
+    super(AbstractError.ErrorNames.URI_SEMANTIC, util.format(message, ...parameters))
+  }
+}
+
+UriSemanticError.Message = {
+  WRONG_NAME: "'%s' is not an entity set, a singleton, an action import, or a function import",
+  WRONG_NAME_ENTITYSET: "'%s' is not an entity set",
+  WRONG_NAME_SINGLETON: "'%s' is not a singleton",
+  WRONG_NAME_FUNCTION_IMPORT: "'%s' is not a function import",
+  WRONG_NAME_BOUND_OPERATION: "'%s' is not a bound operation for the preceding type '%s'",
+  WRONG_NAME_ACTION_IMPORT: "'%s' is not an action import",
+  PROPERTY_NOT_FOUND: "Property '%s' does not exist in type '%s'",
+  ENTITY_SET_NOT_FOUND: "Expected '%s' to be an entity set",
+  ENTITY_TYPE_NOT_FOUND: "Entity type '%s' not found",
+  NEITHER_STRUCTURED_TYPE_NOR_BOUND_OPERATION: "'%s' is neither a structured type nor a bound operation",
+  FUNCTION_NOT_FOUND: "No function for '%s' found for parameter names '%s'",
+  FUNCTION_PARAMETERS_MISSING: "Missing function parameters '%s'",
+  KEY_PREDICATES_MISSING: "Missing key predicates '%s'",
+  DUPLICATE_KEY: "Duplicate key '%s' is not allowed",
+  DUPLICATE_PARAMETER: "Duplicate parameter '%s' is not allowed",
+  WRONG_KEY_NAME: "'%s' is not a valid key",
+  WRONG_PARAMETER_NAME: "'%s' is not a valid parameter",
+  WRONG_VALUE: "The type '%s' does not allow '%s' as its value",
+  INCOMPATIBLE_TYPE: "The type '%s' is not compatible to '%s'",
+  INCOMPATIBLE_TYPEKIND: "The kind '%s' is not compatible to '%s'",
+  INCOMPATIBLE_QUANTITY: "A collection was required: '%s'. Collection was provided: '%s'"
+}
+
+module.exports = UriSemanticError

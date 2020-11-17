@@ -1,0 +1,25 @@
+const BaseStatement = require('./BaseStatement')
+const Delete = require('./Delete')
+const Drop = require('./Drop')
+const Insert = require('./Insert')
+const Select = require('./Select')
+const Update = require('./Update')
+const Create = require('./Create')
+
+/**
+ * @module statements
+ */
+module.exports = {
+  BaseStatement: BaseStatement,
+  CREATE: Create,
+  DROP: Drop,
+  UPDATE: Update.entity,
+  INSERT: Insert,
+  SELECT: Select.select,
+  DELETE: Delete,
+  // added for use in cds/lib/ql/index.js
+  Select,
+  Insert,
+  Update,
+  Delete
+}

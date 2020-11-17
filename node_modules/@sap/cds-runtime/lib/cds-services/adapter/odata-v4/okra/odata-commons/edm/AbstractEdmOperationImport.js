@@ -1,0 +1,126 @@
+'use strict'
+
+const EdmAnnotation = require('./EdmAnnotation')
+const Target = require('./Target')
+const FullQualifiedName = require('../FullQualifiedName')
+const validateThat = require('../validator/ParameterValidator').validateThat
+
+/**
+ * {@link EdmActionImport} and {@link EdmFunctionImport} share much information, this
+ * information contained in this class.
+ * @abstract
+ * @hideconstructor
+ * @ignore
+ */
+class AbstractEdmOperationImport {
+  /**
+   * Constructor
+   *
+   * @param {Edm} edm The edm itself
+   * @param {EdmEntityContainer} container  The entity container the target belongs to
+   * @param {CsdlActionImport | CsdlFunctionImport} operationImport The operation import
+   */
+  constructor (edm, container, operationImport) {
+    validateThat('edm', edm).truthy()
+    validateThat('container', container).truthy()
+    validateThat('operationImport', operationImport).truthy()
+
+    /**
+     * @type {Edm}
+     * @private
+     */
+    this.edm = edm
+
+    /**
+     * @type {string}
+     * @private
+     */
+    this._name = operationImport.name
+
+    /**
+     * @type {EdmEntityContainer}
+     * @private
+     */
+    this._container = container
+
+    /**
+     * @type {Target}
+     * @private
+     */
+    this._entitySet = null
+
+    /**
+     * @type {EdmEntitySet}
+     * @private
+     */
+    this._returnedEntitySet = null
+
+    /**
+     * @type {EdmAnnotation[]}
+     * @private
+     */
+    this._annotations = null
+
+    /**
+     * @type {CsdlActionImport | CsdlFunctionImport}
+     * @private
+     */
+    this._operationImport = operationImport
+
+    if (operationImport.entitySet) {
+      this._entitySet = new Target(operationImport.entitySet, container)
+    }
+  }
+
+  /**
+   * Return the name.
+   * @returns {string} the name
+   */
+  getName () {
+    return this._name
+  }
+
+  /**
+   * Return the full qualified name.
+   * @returns {FullQualifiedName} the full-qualified name
+   */
+  getFullQualifiedName () {
+    return new FullQualifiedName(this._container.getNamespace(), this.getName())
+  }
+
+  /**
+   * Return the entity set which is returned by this operation.
+   * @returns {?EdmEntitySet} the entity set
+   */
+  getReturnedEntitySet () {
+    if (this._entitySet && !this._returnedEntitySet) {
+      /**
+       * @type {EdmEntityContainer}
+       */
+      let entityContainer = this.edm.getEntityContainer(this._entitySet.getEntityContainer())
+      this._returnedEntitySet = entityContainer.getEntitySet(this._entitySet.getTargetName())
+    }
+    return this._returnedEntitySet
+  }
+
+  /**
+   * Return the entityContainer containing this operation import.
+   * @returns {EdmEntityContainer} the entity container
+   */
+  getEntityContainer () {
+    return this._container
+  }
+
+  /**
+   * Returns the annotations for this object.
+   * @returns {EdmAnnotation[]} the annotations
+   */
+  getAnnotations () {
+    if (!this._annotations) {
+      this._annotations = this._operationImport.annotations.map(item => new EdmAnnotation(this.edm, item))
+    }
+    return this._annotations
+  }
+}
+
+module.exports = AbstractEdmOperationImport
