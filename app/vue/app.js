@@ -1,4 +1,4 @@
-import { createApp, ref, reactive } from './vue.js'
+import { createApp, reactive, ref } from './vue.js'
 import cds from './cap.js'
 
 const { GET, POST } = cds.connect.to ('/hcql/catalog')
@@ -6,14 +6,11 @@ const $ = s => document.querySelector (s)
 
 createApp ({ setup() {
 
-  const books = ref([])
-  const book = ref(undefined)
-  const order = reactive({ quantity:1 })
-  const message = reactive({ reset() { this.succeeded = this.failed = undefined } })
   const stars = [ '☆☆☆☆☆', '★☆☆☆☆', '★★☆☆☆', '★★★☆☆', '★★★★☆', '★★★★★' ]
+  const books = ref([]), details = ref()
+  const order = reactive({ quantity:1 })
 
-
-  return { books, book, order, message, stars,
+  return { books, details, order, stars,
 
     async fetch ($) {
       books.value = await GET `ListOfBooks { *, genre.name as genre, currency.symbol as currency } ${
@@ -21,20 +18,22 @@ createApp ({ setup() {
       }`
     },
 
-    async inspect (index) { message.reset()
-      let { ID } = book.value = books.value [index]
-      Object.assign (book.value, await GET `Books/${ID} { descr, stock }`)
-      Object.assign (order, { book: ID, quantity: 1 }) // reset order for selected book
+    async inspect (index) {
+      let b = details.value = books.value [index], ID = order.book = b.ID
+      Object.assign (b, await GET `Books/${ID} { descr, stock }`)
       setTimeout (()=> $('form > input').focus(), 11) // focus input field after rendering
+      order.succeeded = order.failed = undefined // reset messages displayed before
     },
 
-    async submitOrder() { message.reset()
+    async submitOrder() {
+      order.succeeded = order.failed = undefined // reset messages displayed before
       try {
-        let { stock } = await POST (`submitOrder`, order)
-        book.value.stock = stock
-        message.succeeded = `Successfully ordered ${order.quantity} item(s).`
+        let { book, quantity } = order
+        let { stock } = await POST (`submitOrder`, { book, quantity })
+        order.succeeded = `Successfully ordered ${order.quantity} item(s).`
+        details.value.stock = stock
       } catch (e) {
-        message.failed = e.message
+        order.failed = e.message
         throw e
       }
     },
