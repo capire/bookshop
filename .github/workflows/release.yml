@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  # tests:
+  #   uses: capire/samples/.github/workflows/test.yaml@main
+  #   secrets: inherit
+
+  deploy-cf:
+    # needs: [tests]
+    uses: capire/samples/.github/workflows/cf.yaml@main
+    secrets: inherit
+    with:
+      environment: Production
