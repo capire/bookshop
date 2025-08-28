@@ -1,0 +1,23 @@
+name: Cloud Foundry
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: cf-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    uses: cap-js/samples/.github/workflows/cf.yaml
+    with:
+      cf-api: ${{ vars.CF_API }}
+      cf-org: ${{ vars.CF_ORG }}
+      cf-space: ${{ vars.CF_SPACE }}
+      cf-username: ${{ vars.CF_USERNAME }}
+      cf-password: ${{ secrets.CF_PASSWORD }}

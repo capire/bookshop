@@ -10,7 +10,7 @@
     "index.cds"
   ],
   "devDependencies": {
-    "@cap-js/sqlite": ">=1"
+    "@cap-js/sqlite": ">=1",
   },
   "dependencies": {
     "@sap/cds": ">=7",
@@ -20,5 +20,13 @@
     "start": "cds-serve",
     "watch": "cds watch"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "cds": {
+    "requires": {
+      "[production]": {
+        "auth": "mocked",
+        "db": "sqlite"
+      }
+    }
+  }
 }
