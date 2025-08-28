@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v5
       - run: npm add -D @sap/cds-dk
   deploy:
-    uses: capire/samples/.github/workflows/cf.yaml
+    uses: capire/samples/.github/workflows/cf.yaml@main
     secrets: inherit
     with:
       environment: Staging
