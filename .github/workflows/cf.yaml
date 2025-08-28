@@ -19,7 +19,7 @@ permissions:
   deployments: write
 
 env:
-  APP_NAME: samples
+  APP_NAME: bookshop
   FORCE_COLOR: true
 
 jobs:
