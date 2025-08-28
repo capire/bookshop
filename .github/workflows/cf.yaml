@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: cap-js/samples/.github/actions/.github/actions/cf-setup@main
+      - uses: capire/samples/.github/actions/.github/actions/cf-setup@main
         with:
           cf-api: ${{ vars.CF_API }}
           cf-org: ${{ vars.CF_ORG }}
@@ -43,7 +43,7 @@ jobs:
       - run: npm clean-install
       - run: npx cds up
 
-      - uses: cap-js/samples/.github/actions/cf-github-deploy@main
+      - uses: capire/samples/.github/actions/cf-github-deploy@main
         with:
           app-name: ${{ env.APP_NAME }}
           environment: ${{ inputs.environment || 'Staging' }}
