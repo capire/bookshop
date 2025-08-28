@@ -38,6 +38,7 @@ jobs:
           cf-username: ${{ vars.CF_USERNAME }}
           cf-password: ${{ secrets.CF_PASSWORD }}
       - run: npm add -D @sap/cds-dk
+      - run: npx cds add approuter
       - run: npm clean-install
       - run: npx cds up
 
