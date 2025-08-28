@@ -10,7 +10,7 @@
     },
     {
       "source": "^/(admin|browse|odata|rest|hcql)/(.*)$",
-      "target": "$1",
+      "target": "/$1/$2",
       "destination": "srv-api",
       "csrfProtection": true
     }
