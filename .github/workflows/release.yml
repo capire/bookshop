@@ -11,12 +11,12 @@ permissions:
 
 jobs:
   # tests:
-  #   uses: capire/samples/.github/workflows/test.yaml@main
+  #   uses: capire/bookshop/.github/workflows/test.yml@main
   #   secrets: inherit
 
   deploy-cf:
     # needs: [tests]
-    uses: capire/samples/.github/workflows/cf.yaml@main
+    uses: capire/bookshop/.github/workflows/cf.yml@main
     secrets: inherit
     with:
       environment: Production
