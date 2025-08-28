@@ -23,7 +23,12 @@
     "requires": {
       "[production]": {
         "auth": "mocked",
-        "db": "sqlite"
+        "db": {
+          "kind": "sqlite",
+          "credentials": {
+            "url": "memory:"
+          }
+        }
       }
     },
     "server": {
