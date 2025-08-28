@@ -10,11 +10,11 @@
     "index.cds"
   ],
   "devDependencies": {
-    "@cap-js/sqlite": ">=1",
     "@sap/cds-dk": "^9"
   },
   "dependencies": {
     "@sap/cds": ">=7",
+    "@cap-js/sqlite": ">=1",
     "express": "^4.17.1"
   },
   "scripts": {
@@ -28,6 +28,9 @@
         "auth": "mocked",
         "db": "sqlite"
       }
+    },
+    "server": {
+      "index": true
     }
   }
 }
