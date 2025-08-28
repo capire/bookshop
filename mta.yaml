@@ -24,7 +24,7 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      []
+      - name: bookshop-db
 
   - name: bookshop
     type: approuter.nodejs
@@ -46,5 +46,17 @@ modules:
           app-protocol: ${protocol}
           app-uri: ${default-uri}
 
+  - name: bookshop-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: bookshop-db
+
 resources:
-  []
+  - name: bookshop-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
