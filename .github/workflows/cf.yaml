@@ -20,12 +20,9 @@ jobs:
         with:
           node-version: 22
       - uses: actions/checkout@v5
-      - run: npm add @sap/cds-dk
+      - run: npm add -D @sap/cds-dk
   deploy:
-    uses: cap-js/samples/.github/workflows/cf.yaml
+    uses: capire/samples/.github/workflows/cf.yaml
+    secrets: inherit
     with:
-      cf-api: ${{ vars.CF_API }}
-      cf-org: ${{ vars.CF_ORG }}
-      cf-space: ${{ vars.CF_SPACE }}
-      cf-username: ${{ vars.CF_USERNAME }}
-      cf-password: ${{ secrets.CF_PASSWORD }}
+      environment: Staging
