@@ -9,9 +9,6 @@
     "db",
     "index.cds"
   ],
-  "devDependencies": {
-    "@sap/cds-dk": "^9"
-  },
   "dependencies": {
     "@sap/cds": ">=7",
     "@cap-js/sqlite": ">=1",
