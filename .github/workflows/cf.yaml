@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: cap-js/.github/.github/actions/.github/actions/cf-setup@main
+      - uses: ./.github/actions/cf-setup # cap-js/cf-setup@v1
         with:
           cf-api: ${{ vars.CF_API }}
           cf-org: ${{ vars.CF_ORG }}
@@ -41,7 +41,7 @@ jobs:
       - run: npm clean-install
       - run: npx cds up
 
-      - uses: cap-js/.github/.github/actions/github-deployment@main
+      - uses: ./.github/actions/cf-github-deploy
         with:
           app-name: ${{ env.APP_NAME }}
           environment: ${{ inputs.environment || 'Staging' }}
