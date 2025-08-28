@@ -9,9 +9,12 @@
     "db",
     "index.cds"
   ],
+  "devDependencies": {
+    "@cap-js/sqlite": ">=1"
+  },
   "dependencies": {
+    "@cap-js/hana": "^2",
     "@sap/cds": ">=7",
-    "@cap-js/sqlite": ">=1",
     "express": "^4.17.1"
   },
   "scripts": {
@@ -22,17 +25,8 @@
   "cds": {
     "requires": {
       "[production]": {
-        "auth": "mocked",
-        "db": {
-          "kind": "sqlite",
-          "credentials": {
-            "url": "memory:"
-          }
-        }
+        "auth": "mocked"
       }
-    },
-    "server": {
-      "index": true
     }
   }
 }
