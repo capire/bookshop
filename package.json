@@ -11,6 +11,7 @@
   ],
   "devDependencies": {
     "@cap-js/sqlite": ">=1",
+    "@sap/cds-dk": "^9"
   },
   "dependencies": {
     "@sap/cds": ">=7",
