@@ -24,5 +24,6 @@ jobs:
   deploy:
     uses: capire/samples/.github/workflows/cf.yaml@main
     secrets: inherit
+    needs: [install-dk]
     with:
       environment: Staging
