@@ -5,7 +5,8 @@ on:
     inputs:
       environment:
         description: 'Deployment environment name'
-        required: true
+        required: false
+        default: 'Staging'
         type: string
   workflow_dispatch:
   push:
@@ -23,7 +24,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || 'Staging' }}
+    environment: ${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -44,7 +45,7 @@ jobs:
       - uses: ./.github/actions/github-deploy
         with:
           app-name: ${{ env.APP_NAME }}
-          environment: ${{ inputs.environment || 'Staging' }}
+          environment: ${{ inputs.environment }}
 
       - run: cf logs ${{ env.APP_NAME }} --recent
         if: always()
