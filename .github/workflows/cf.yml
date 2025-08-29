@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Deployment environment name'
         required: false
-        default: 'Staging'
+        default: Staging
         type: string
   workflow_dispatch:
   push:
