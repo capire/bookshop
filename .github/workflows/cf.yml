@@ -38,7 +38,6 @@ jobs:
           cf-username: ${{ vars.CF_USERNAME }}
           cf-password: ${{ secrets.CF_PASSWORD }}
       - run: npm add -D @sap/cds-dk
-      # - run: npx cds add approuter
       - run: npm clean-install
       - run: npx cds up
 
@@ -49,5 +48,5 @@ jobs:
 
       - run: cf logs ${{ env.APP_NAME }}-srv --recent
         if: always()
-      # - run: cf logs ${{ env.APP_NAME }}-db-deployer --recent
-      #   if: always()
+      - run: cf logs ${{ env.APP_NAME }}-db-deployer --recent
+        if: always()
