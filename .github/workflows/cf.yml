@@ -7,8 +7,6 @@ on:
         description: 'Deployment environment name'
         required: true
         type: string
-
-  pull_request:
   workflow_dispatch:
   push:
     branches:
