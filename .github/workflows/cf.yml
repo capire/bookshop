@@ -43,9 +43,11 @@ jobs:
 
       - uses: ./.github/actions/github-deploy
         with:
-          app-name: ${{ env.APP_NAME }}-srv
+          app-name: ${{ env.APP_NAME }}
           environment: ${{ inputs.environment || 'Staging' }}
 
+      - run: cf logs ${{ env.APP_NAME }} --recent
+        if: always()
       - run: cf logs ${{ env.APP_NAME }}-srv --recent
         if: always()
       - run: cf logs ${{ env.APP_NAME }}-db-deployer --recent
