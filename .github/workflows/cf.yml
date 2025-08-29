@@ -24,6 +24,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'Staging' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
