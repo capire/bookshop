@@ -4,12 +4,12 @@
  * import fetch from 'cap.js'; const { GET, POST } = fetch.for ('/rest/catalog')
  */
 export default {
-  connect: { to: (base, defaults) => new Fetcher (base, defaults) },
-  for: (base, defaults) => new Fetcher (base, defaults),
+  connect: { to: (base, defaults) => new ServiceClient (base, defaults) },
+  for: (base, defaults) => new ServiceClient (base, defaults),
 }
 
 /** A CAP Service lookalike for HTTP clients */
-export class Fetcher {
+export class ServiceClient {
 
   // These are convenience methods that still return standard fetch Response objects
   options (..._) { return this.fetch ('OPTIONS', ..._) }
