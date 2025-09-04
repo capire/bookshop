@@ -25,7 +25,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment ?? 'Staging' }}
+    environment: ${{ inputs.environment || 'Staging' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -46,7 +46,7 @@ jobs:
       - uses: ./.github/actions/github-deploy
         with:
           app-name: ${{ env.APP_NAME }}
-          environment: ${{ inputs.environment ?? 'Staging' }}
+          environment: ${{ inputs.environment || 'Staging' }}
 
       - run: cf logs ${{ env.APP_NAME }} --recent
         if: always()
