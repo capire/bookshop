@@ -25,7 +25,6 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || 'Staging' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -43,14 +42,19 @@ jobs:
       - run: npm install
       - run: npx cds up
 
-      - uses: ./.github/actions/github-deploy
-        with:
-          app-name: ${{ env.APP_NAME }}
-          environment: ${{ inputs.environment || 'Staging' }}
-
       - run: cf logs ${{ env.APP_NAME }} --recent
         if: always()
       - run: cf logs ${{ env.APP_NAME }}-srv --recent
         if: always()
       - run: cf logs ${{ env.APP_NAME }}-db-deployer --recent
         if: always()
+
+      - name: Get application URL
+        id: route
+        shell: bash
+        run: |
+          host=$(cf app "${APP_NAME}" | awk '/routes:/ {print $2}' | sed -E 's#^https?://##; s/,.*$//')
+          echo "url=https://$host" >> "$GITHUB_OUTPUT"
+    environment:
+      name: ${{ inputs.environment || 'Staging' }}
+      url:  ${{ steps.route.outputs.url }}
