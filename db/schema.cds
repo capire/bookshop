@@ -5,7 +5,7 @@ entity Books : managed {
   key ID   : Integer;
   author   : Association to Authors @mandatory;
   title    : localized String @mandatory;
-  descr    : localized String;
+  descr    : localized String(2000);
   genre    : Association to Genres;
   stock    : Integer;
   price    : Price;
