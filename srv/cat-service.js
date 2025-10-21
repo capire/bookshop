@@ -21,7 +21,8 @@ class CatalogService extends cds.ApplicationService { init() {
     if (quantity > book.stock) return req.error (409, `${quantity} exceeds stock for book #${id}`)
 
     // Reduce stock in database and return updated stock value
-    await UPDATE (Books, id) .with ({ stock: book.stock -= quantity })
+    await UPDATE (Books, id) .with ( `stock = stock - ${quantity}` )
+    book.stock -= quantity
     return book
   })
 

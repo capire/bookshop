@@ -1,0 +1,57 @@
+name: Cloud Foundry
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        default: Staging
+        type: string
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  APP_NAME: bookshop
+  FORCE_COLOR: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: ./.github/actions/cf-setup # cap-js/cf-setup@v1
+        with:
+          cf-api: ${{ vars.CF_API }}
+          cf-org: ${{ vars.CF_ORG }}
+          cf-space: ${{ vars.CF_SPACE }}
+          cf-username: ${{ vars.CF_USERNAME }}
+          cf-password: ${{ secrets.CF_PASSWORD }}
+      - run: npm add -D @sap/cds-dk
+      - run: npx cds add hana
+      - run: npm install
+      - run: npx cds up
+
+      - run: cf logs ${{ env.APP_NAME }} --recent
+        if: always()
+      - run: cf logs ${{ env.APP_NAME }}-srv --recent
+        if: always()
+      - run: cf logs ${{ env.APP_NAME }}-db-deployer --recent
+        if: always()
+
+      - name: Get application URL
+        id: route
+        shell: bash
+        run: |
+          host=$(cf app "${APP_NAME}" | awk '/routes:/ {print $2}')
+          echo "url=https://$host" >> "$GITHUB_OUTPUT"
+    environment:
+      name: ${{ inputs.environment || 'Staging' }}
+      url:  ${{ steps.route.outputs.url }}

@@ -8,8 +8,8 @@ service CatalogService {
   excluding { descr };
 
   /** For display in details pages */
-  @readonly entity Books as projection on my.Books { *,
-    author.name as author
+  @readonly entity Books as projection on my.Books {
+    *, author.name as author
   } excluding { createdBy, modifiedBy };
 
   @requires: 'authenticated-user'
