@@ -32,7 +32,7 @@
         <td>{{ b.title }}</td>
         <td>{{ b.author }}</td>
         <td>{{ b.genre }}</td>
-        <td>{{ stars[b.rating||1+(4-i)%5] }} ({{ b.reviews||b.ID%49 }}) </td>
+        <td>{{ stars[ b.rating ? Math.round(b.rating) : 1+(4-i)%5 ] }} ({{ b.reviews||b.ID%49 }}) </td>
         <td>{{ b.currency }} {{ b.price }}</td>
       </tr>
     </table>
