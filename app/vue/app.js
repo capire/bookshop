@@ -12,10 +12,8 @@ createApp ({ setup() {
 
   return { books, details, order, stars,
 
-    async fetch ($) {
-      books.value = await GET `ListOfBooks { *, genre.name as genre, currency.symbol as currency } ${
-        $ ? `where $search('${$}')` : ''
-      }`
+    async fetch (terms) {
+      books.value = await GET `ListOfBooks ${ terms ? `where $search('${terms}')` : '' }`
     },
 
     async inspect (index) {
