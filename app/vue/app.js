@@ -13,7 +13,7 @@ createApp ({ setup() {
   return { books, details, order, stars,
 
     async fetch (terms) {
-      books.value = await GET `ListOfBooks?${ terms ? `$search=${terms}` : '' }`
+      books.value = await GET `ListOfBooks${ terms ? `?$search=${terms}` : '' }`
     },
 
     async inspect (index) {
