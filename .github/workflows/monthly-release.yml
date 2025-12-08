@@ -77,6 +77,6 @@ jobs:
       - name: Push changes and tags
         if: steps.check_commits.outputs.has_new_commits == 'true'
         run: |
-          git push origin HEAD:monthly-release
+          git push origin HEAD:main --follow-tags
 
 
