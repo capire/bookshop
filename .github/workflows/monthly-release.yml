@@ -28,7 +28,24 @@ jobs:
       - name: Install dependencies
         run: npm i
 
+      - name: Check for new commits since last tag
+        id: check_commits
+        run: |
+          git fetch --tags
+          last_tag=$(git describe --tags --abbrev=0)
+          echo "Last tag: $last_tag"
+
+          count=$(git rev-list "${last_tag}..HEAD" --count)
+          echo "Commits since last tag: $count"
+
+          if [ "$count" -gt 0 ]; then
+            echo "has_new_commits=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_new_commits=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Bump version (patch)
+        if: steps.check_commits.outputs.has_new_commits == 'true'
         env:
           GIT_COMMITTER_NAME: github-actions[bot]
           GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
@@ -38,6 +55,7 @@ jobs:
           npm version patch -m "chore(release): %s [skip ci]"
 
       - name: Push changes and tags
+        if: steps.check_commits.outputs.has_new_commits == 'true'
         run: |
           git push origin HEAD:monthly-release
 
