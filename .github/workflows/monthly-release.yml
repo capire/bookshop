@@ -28,17 +28,31 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Check for new commits since last tag
+      - name: Check for new commits since current version tag
         id: check_commits
         run: |
           git fetch --tags
-          last_tag=$(git describe --tags --abbrev=0)
-          echo "Last tag: $last_tag"
 
-          if [ -n "$last_tag" ]; then
-            git checkout "$last_tag"
-            count=$(git rev-list "${last_tag}..HEAD" --count)
-            echo "Commits since last tag: $count"
+          pkg_version=$(node -p "require('./package.json').version")
+          echo "pkg_version=$pkg_version" >> $GITHUB_OUTPUT
+          major_minor="${pkg_version%.*}"
+
+          tag=""
+          if git rev-parse -q --verify "refs/tags/v$pkg_version" >/dev/null; then
+            tag="v$pkg_version"
+          elif git rev-parse -q --verify "refs/tags/$pkg_version" >/dev/null; then
+            tag="$pkg_version"
+
+          # Sometimes they also get released manually as just major.minor
+          elif git rev-parse -q --verify "refs/tags/v$major_minor" >/dev/null; then
+            tag="v$major_minor"
+          elif git rev-parse -q --verify "refs/tags/$major_minor" >/dev/null; then
+            tag="$major_minor"
+          fi
+
+          if [ -n "$tag" ]; then
+            count=$(git rev-list "${tag}..HEAD" --count)
+            echo "Commits since ${tag}: $count"
           else
             count=$(git rev-list HEAD --count)
             echo "No tags found, total commits: $count"
