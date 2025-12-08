@@ -8,13 +8,17 @@ on:
 permissions:
   contents: write
   deployments: write
+  packages: write
+  id-token: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.bump.outputs.new_tag }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Needed so npm version can create and push tags
           fetch-depth: 0
@@ -24,9 +28,6 @@ jobs:
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org/"
-
-      - name: Install dependencies
-        run: npm i
 
       - name: Check for new commits since current version tag
         id: check_commits
@@ -65,6 +66,7 @@ jobs:
           fi
 
       - name: Bump version (patch)
+        id: bump
         if: steps.check_commits.outputs.has_new_commits == 'true'
         env:
           GIT_COMMITTER_NAME: github-actions[bot]
@@ -72,11 +74,34 @@ jobs:
           GIT_AUTHOR_NAME: github-actions[bot]
           GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
         run: |
-          npm version patch -m "chore(release): %s [skip ci]"
+          new_tag=$(npm version patch -m "chore(release): %s [skip ci]")
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
       - name: Push changes and tags
         if: steps.check_commits.outputs.has_new_commits == 'true'
         run: |
           git push origin HEAD:main --follow-tags
 
+      - name: Create GitHub Release using gh
+        if: steps.check_commits.outputs.has_new_commits == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ steps.bump.outputs.new_tag }}"
 
+          # Create release if it doesn't already exist
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release for tag '$tag' already exists. Skipping."
+          else
+            gh release create "$tag" \
+              --title "Release $tag" \
+              --notes "Automated release for version $tag"
+          fi
+
+  publish:
+    needs: [release]
+    uses: capire/bookshop/.github/workflows/publish.yml@main
+    if: needs.release.outputs.new_tag != ''
+    with:
+      ref: refs/tags/${{ needs.release.outputs.new_tag }}
+    secrets: inherit
