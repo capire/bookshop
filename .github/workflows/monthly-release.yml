@@ -35,8 +35,14 @@ jobs:
           last_tag=$(git describe --tags --abbrev=0)
           echo "Last tag: $last_tag"
 
-          count=$(git rev-list "${last_tag}..HEAD" --count)
-          echo "Commits since last tag: $count"
+          if [ -n "$last_tag" ]; then
+            git checkout "$last_tag"
+            count=$(git rev-list "${last_tag}..HEAD" --count)
+            echo "Commits since last tag: $count"
+          else
+            count=$(git rev-list HEAD --count)
+            echo "No tags found, total commits: $count"
+          fi
 
           if [ "$count" -gt 0 ]; then
             echo "has_new_commits=true" >> "$GITHUB_OUTPUT"
