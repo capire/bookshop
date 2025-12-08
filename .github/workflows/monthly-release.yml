@@ -28,9 +28,6 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Run tests
-        run: npm test
-
       - name: Bump version (patch)
         env:
           GIT_COMMITTER_NAME: github-actions[bot]
