@@ -6,7 +6,7 @@ on:
     - cron: "0 0 1-7 * 3" # First Wednesday every month
 
 permissions:
-  contents: read
+  contents: write
   deployments: write
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
           registry-url: "https://registry.npmjs.org/"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm i
 
       - name: Run tests
         run: npm test
