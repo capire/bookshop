@@ -1,0 +1,46 @@
+name: Monthly Release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1-7 * 3" # First Wednesday every month
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  release:
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          # Needed so npm version can create and push tags
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org/"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Bump version (patch)
+        env:
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+        run: |
+          npm version patch -m "chore(release): %s [skip ci]"
+
+      - name: Push changes and tags
+        run: |
+          git push origin HEAD:main --follow-tags
+
+
