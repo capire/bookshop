@@ -35,7 +35,7 @@ jobs:
           cf-username: ${{ vars.CF_USERNAME }}
           cf-password: ${{ secrets.CF_PASSWORD }}
       - run: npm add -D @sap/cds-dk
-      - run: npx cds add hana
+      - run: npx cds add hana,xsuaa
       - run: npm install
       - run: npx cds up
 
