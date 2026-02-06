@@ -16,7 +16,7 @@ service CatalogService @(odata:'/browse') {
   } excluding { createdBy, modifiedBy };
 
   @requires: 'authenticated-user'
-  action submitOrder ( book: Books:ID, quantity: Integer );
+  action submitOrder ( book: Books:ID @title: '{i18n>submitOrder.book}', quantity: Integer @title: '{i18n>submitOrder.quantity}' );
 }
 
 // Additionally serve via HCQL and REST
