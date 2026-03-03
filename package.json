@@ -3,6 +3,7 @@
   "version": "2.1.9",
   "description": "Our primer sample for getting started in a nutshell.",
   "repository": "https://github.com/capire/bookshop",
+  "type": "module",
   "files": [
     "app",
     "srv",
