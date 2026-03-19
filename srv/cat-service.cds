@@ -21,3 +21,4 @@ service CatalogService @(path:'browse') {
 
 // Serve via OData, HCQL and REST
 annotate CatalogService with @odata @hcql @rest;
+annotate CatalogService with @mcp;
