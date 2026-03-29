@@ -8,3 +8,4 @@ service AdminService @(odata:'/admin') {
 
 // Additionally serve via HCQL and REST
 annotate AdminService with @hcql @rest;
+annotate AdminService with @mcp;

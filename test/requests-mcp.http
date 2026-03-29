@@ -1,0 +1,92 @@
+
+### CatalogService.read Books
+POST http://localhost:4004/mcp/browse
+Content-Type: application/json
+Accept: application/json, text/event-stream
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "query",
+    "arguments": { 
+      "entity": "Books", 
+      "select": [ 
+        "ID", "title", "author", "genre" 
+      ] 
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 6
+}
+
+### AdminService.read Authors
+POST http://localhost:4004/mcp/admin
+Content-Type: application/json
+Accept: application/json, text/event-stream
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "query",
+    "arguments": { 
+      "entity": "Authors", 
+      "select": [ 
+        "ID", "name", { "ref": ["books", "title"] }
+      ] 
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 6
+}
+
+#####
+{ "entity": "Books", "select": [ "ID", "title", "author" ], "where": { "author": { "like": "%Bro%" } } }
+
+
+### Same with body fragment
+GET {{cats}}/Books
+Content-Type: text/plain
+
+  { ID, title, author } 
+  where author like '%Bro%'
+
+
+### Same with POST
+POST {{cats}}
+Content-Type: text/plain
+
+  SELECT from Books [where author like '%Bro%'] { 
+    ID, title, author 
+  }
+
+
+### AdminService.read Authors 
+POST {{admin}}
+Authorization: Basic alice:
+Content-Type: text/plain
+
+  SELECT from Authors { 
+    ID, name, books { 
+      ID, title, 
+      genre.name as genre 
+    } 
+  }
+
+
+### Same with body as CQN
+POST {{admin}}
+Authorization: Basic alice:
+Content-Type: application/json
+
+{ "SELECT": {
+  "from": { "ref": [ "Authors" ] },
+  "columns": [
+    { "ref": [ "ID" ] },
+    { "ref": [ "name" ] },
+    { "ref": [ "books" ], "expand": [
+      { "ref": [ "ID" ] },
+      { "ref": [ "title" ] },
+      { "ref": [ "genre", "name" ], "as": "genre" }
+    ]}
+  ]
+}}
