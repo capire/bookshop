@@ -1,6 +1,6 @@
 using { sap.capire.bookshop as my } from '../db/schema';
 
-service CatalogService @(odata:'/browse') {
+service CatalogService @(path:'browse') {
 
   /** For displaying lists of Books */
   @readonly entity ListOfBooks as projection on Books {
@@ -19,5 +19,5 @@ service CatalogService @(odata:'/browse') {
   action submitOrder ( book: Books:ID, quantity: Integer );
 }
 
-// Additionally serve via HCQL and REST
-annotate CatalogService with @hcql @rest;
+// Serve via OData, HCQL and REST
+annotate CatalogService with @odata @hcql @rest;

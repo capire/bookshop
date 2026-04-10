@@ -1,4 +1,4 @@
-@cats = http://localhost:4004/hcql/catalog
+@cats = http://localhost:4004/hcql/browse
 @admin = http://localhost:4004/hcql/admin
 
 
@@ -10,30 +10,30 @@ GET {{cats}}/Books { ID, title, author } where author like '%Bro%'
 GET {{cats}}/Books
 Content-Type: text/plain
 
-  { ID, title, author } 
-  where author like '%Bro%'
+{ ID, title, author } 
+where author like '%Bro%'
 
 
 ### Same with POST
 POST {{cats}}
 Content-Type: text/plain
 
-  SELECT from Books [where author like '%Bro%'] { 
-    ID, title, author 
-  }
+SELECT from Books [where author like '%Bro%'] { 
+  ID, title, author 
+}
 
 
-### AdmingService.read Authors 
+### AdminService.read Authors 
 POST {{admin}}
 Authorization: Basic alice:
 Content-Type: text/plain
 
-  SELECT from Authors { 
-    ID, name, books { 
-      ID, title, 
-      genre.name as genre 
-    } 
-  }
+SELECT from Authors { 
+  ID, name, books { 
+    ID, title, 
+    genre.name as genre 
+  } 
+}
 
 
 ### Same with body as CQN

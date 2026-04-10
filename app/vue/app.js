@@ -1,7 +1,7 @@
 import { createApp, reactive, ref } from './vue.js'
 import cds from './cap.js'
 
-const { GET, POST } = cds.connect.to ('/rest/catalog')
+const { GET, POST } = cds.connect.to ('/rest/browse')
 const $ = s => document.querySelector (s)
 
 createApp ({ setup() {
