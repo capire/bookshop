@@ -1,26 +1,33 @@
 
 ### CatalogService.read Books
-GET http://localhost:4004/browse/Books?
+GET http://localhost:4004/odata/v4/browse/Books?
 &$select=ID,title,author
 &$filter=contains(author,'Bro')
 
+### CatalogService.read Books/201
+GET http://localhost:4004/odata/v4/browse/Books/201
 
-### AdmingService.read Authors 
+
+### AdmingService.read Books/201
+GET http://localhost:4004/admin/Books/201
+
+### AdmingService.read Authors
 GET http://localhost:4004/admin/Authors?
 &$select=ID,name
 &$expand=books($select=ID,title;$expand=genre($select=name))
-Authorization: Basic alice:
-
 
 ### Same with inofficial genre/name syntax
 GET http://localhost:4004/admin/Authors?
 &$select=ID,name
 &$expand=books($select=ID,title,genre/name)
-Authorization: Basic alice:
-
 
 ### CatalogService.submitOrder()
-POST http://localhost:4004/browse/submitOrder
+POST http://localhost:4004/odata/v4/browse/submitOrder
+Content-Type: application/json
+Authorization: Basic bob:
+
+### CatalogService.submitOrder(/201
+POST http://localhost:4004/odata/v4/browse/submitOrder
 Content-Type: application/json
 Authorization: Basic bob:
 
