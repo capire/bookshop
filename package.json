@@ -1,6 +1,6 @@
 {
   "name": "@capire/bookshop",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "Our primer sample for getting started in a nutshell.",
   "repository": "https://github.com/capire/bookshop",
   "type": "module",
@@ -11,10 +11,10 @@
     "index.cds"
   ],
   "devDependencies": {
-    "@cap-js/sqlite": "^2.1.1"
+    "@cap-js/sqlite": ">=2.1.1"
   },
   "dependencies": {
-    "@sap/cds": "^9.6.2"
+    "@sap/cds": ">=9.6.2"
   },
   "scripts": {
     "start": "cds-serve",

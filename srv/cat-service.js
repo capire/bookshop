@@ -17,7 +17,7 @@ export class CatalogService extends cds.ApplicationService { init() {
     let succeeded = await UPDATE (Books,id) 
       .with `stock = stock - ${quantity}` 
       .where `stock >= ${quantity}` 
-    if (succeeded) return
+    if (succeeded.affected ?? succeeded) return
     else if (!this.exists(Books,id)) req.error (404, `Book #${id} doesn't exist`)
     else req.error (409, `${quantity} exceeds stock for book #${id}`)
   })
