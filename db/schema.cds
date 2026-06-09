@@ -15,6 +15,7 @@ entity Books : managed {
 entity Authors : managed {
   key ID       : Integer;
   name         : String @mandatory;
+  email        : String(255);
   dateOfBirth  : Date;
   dateOfDeath  : Date;
   placeOfBirth : String;
