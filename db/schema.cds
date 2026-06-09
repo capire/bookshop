@@ -11,6 +11,7 @@ entity Books : managed {
   price    : Price;
   currency : Currency;
 }
+//testing for github commit
 
 entity Authors : managed {
   key ID       : Integer;
