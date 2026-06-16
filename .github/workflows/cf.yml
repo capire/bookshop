@@ -1,6 +1,7 @@
 name: Cloud Foundry
 
 on:
+  pull_request:
   workflow_call:
     inputs:
       environment:
