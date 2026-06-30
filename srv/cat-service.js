@@ -2,7 +2,7 @@ const cds = require('@sap/cds')
 
 class CatalogService extends cds.ApplicationService { init() {
 
-  const { Books } = cds.entities('sap.capire.bookshop')
+  const { Books } = cds.entities ('sap.capire.bookshop')
   const { ListOfBooks } = this.entities
 
   // Add some discount for overstocked books
@@ -11,19 +11,15 @@ class CatalogService extends cds.ApplicationService { init() {
   })
 
   // Reduce stock of ordered books if available stock suffices
-  this.on('submitOrder', async req => {
+  this.on ('submitOrder', async req => {
     let { book:id, quantity } = req.data
-    let book = await SELECT.from (Books, id, b => b.stock)
-
-    // Validate input data
-    if (!book) return req.error (404, `Book #${id} doesn't exist`)
     if (quantity < 1) return req.error (400, `quantity has to be 1 or more`)
-    if (quantity > book.stock) return req.error (409, `${quantity} exceeds stock for book #${id}`)
-
-    // Reduce stock in database and return updated stock value
-    await UPDATE (Books, id) .with ( `stock = stock - ${quantity}` )
-    book.stock -= quantity
-    return book
+    let succeeded = await UPDATE (Books,id) 
+      .with `stock = stock - ${quantity}` 
+      .where `stock >= ${quantity}` 
+    if (succeeded.affected ?? succeeded) return
+    else if (!this.exists(Books,id)) req.error (404, `Book #${id} doesn't exist`)
+    else req.error (409, `${quantity} exceeds stock for book #${id}`)
   })
 
   // Delegate requests to the underlying generic service

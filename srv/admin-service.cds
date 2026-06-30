@@ -1,6 +1,10 @@
 using { sap.capire.bookshop as my } from '../db/schema';
-service AdminService @(path:'/admin') {
+
+service AdminService @(odata:'/admin') {
   entity Authors as projection on my.Authors;
   entity Books as projection on my.Books;
   entity Genres as projection on my.Genres;
 }
+
+// Additionally serve via HCQL and REST
+annotate AdminService with @hcql @rest;

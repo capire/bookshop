@@ -1,0 +1,33 @@
+name: Publish
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'The git ref to publish (branch, tag, sha). Defaults to the triggering ref.'
+        required: false
+        type: string
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://npm.pkg.github.com'
+      # Ensure npm 11.5.1 or later is installed for trusted publishing
+      - name: Update npm
+        run: npm install -g npm@latest
+      - run: npm publish --provenance --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

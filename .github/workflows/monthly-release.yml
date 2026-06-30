@@ -1,0 +1,106 @@
+name: Monthly Release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1-7 * 3" # First Wednesday every month
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.bump.outputs.new_tag }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+        with:
+          # Needed so npm version can create and push tags
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org/"
+
+      - name: Check for new commits since current version tag
+        id: check_commits
+        run: |
+          git fetch --tags
+
+          pkg_version=$(node -p "require('./package.json').version")
+          echo "pkg_version=$pkg_version" >> $GITHUB_OUTPUT
+          major_minor="${pkg_version%.*}"
+
+          tag=""
+          if git rev-parse -q --verify "refs/tags/v$pkg_version" >/dev/null; then
+            tag="v$pkg_version"
+          elif git rev-parse -q --verify "refs/tags/$pkg_version" >/dev/null; then
+            tag="$pkg_version"
+
+          # Sometimes they also get released manually as just major.minor
+          elif git rev-parse -q --verify "refs/tags/v$major_minor" >/dev/null; then
+            tag="v$major_minor"
+          elif git rev-parse -q --verify "refs/tags/$major_minor" >/dev/null; then
+            tag="$major_minor"
+          fi
+
+          if [ -n "$tag" ]; then
+            count=$(git rev-list "${tag}..HEAD" --count)
+            echo "Commits since ${tag}: $count"
+          else
+            count=$(git rev-list HEAD --count)
+            echo "No tags found, total commits: $count"
+          fi
+
+          if [ "$count" -gt 0 ]; then
+            echo "has_new_commits=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_new_commits=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump version (patch)
+        id: bump
+        if: steps.check_commits.outputs.has_new_commits == 'true'
+        env:
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+        run: |
+          new_tag=$(npm version patch -m "chore(release): %s [skip ci]")
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+
+      - name: Push changes and tags
+        if: steps.check_commits.outputs.has_new_commits == 'true'
+        run: |
+          git push origin HEAD:main --follow-tags
+
+      - name: Create GitHub Release using gh
+        if: steps.check_commits.outputs.has_new_commits == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ steps.bump.outputs.new_tag }}"
+
+          # Create release if it doesn't already exist
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release for tag '$tag' already exists. Skipping."
+          else
+            gh release create "$tag" \
+              --title "Release $tag" \
+              --notes "Automated release for version $tag"
+          fi
+
+  publish:
+    needs: [release]
+    uses: capire/bookshop/.github/workflows/publish.yml@main
+    if: needs.release.outputs.new_tag != ''
+    with:
+      ref: refs/tags/${{ needs.release.outputs.new_tag }}
+    secrets: inherit

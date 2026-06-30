@@ -12,7 +12,7 @@ entity Books : managed {
   currency : Currency;
 }
 
-entity Authors : cuid, managed {
+entity Authors : managed {
   key ID       : Integer;
   name         : String @mandatory;
   dateOfBirth  : Date;

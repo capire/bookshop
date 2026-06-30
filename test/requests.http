@@ -1,0 +1,30 @@
+
+### CatalogService.read Books
+GET http://localhost:4004/browse/Books?
+&$select=ID,title,author
+&$filter=contains(author,'Bro')
+
+
+### AdmingService.read Authors 
+GET http://localhost:4004/admin/Authors?
+&$select=ID,name
+&$expand=books($select=ID,title;$expand=genre($select=name))
+Authorization: Basic alice:
+
+
+### Same with inofficial genre/name syntax
+GET http://localhost:4004/admin/Authors?
+&$select=ID,name
+&$expand=books($select=ID,title,genre/name)
+Authorization: Basic alice:
+
+
+### CatalogService.submitOrder()
+POST http://localhost:4004/browse/submitOrder
+Content-Type: application/json
+Authorization: Basic bob:
+
+{
+  "book": 201,
+  "quantity": 3
+}

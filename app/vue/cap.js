@@ -50,17 +50,36 @@ export class ServiceClient {
       o2[k] = typeof d2[k] === 'object' ? { ...d2[k], ...o2[k] } : o2[k] ?? d2[k]
 
     // send the request, and return the response, if successful
-    const res = await fetch (this.base + (url[0] === '/' ? url : '/' + url), { ...o2, method })
-    if (res.ok) return res
-
-    // if failed, construct and throw an error
-    const { data, error:e = data.error } = await res.json(); e.message ??= `HTTP ${res.status}: ${res.statusText}`
-    throw Object.assign (new Error, e)
+    o2.headers ??= {}
+    o2.headers['x-csrf-token'] = await _fetchCsrfToken()
+    return fetch (this.base + (url[0] === '/' ? url : '/' + url), { ...o2, method })
   }
 }
 
+const _fetchCsrfToken = async () => {
+  if(document.csrfToken === undefined) {
+    let res = await fetch('/', { method: 'HEAD', headers: { 'x-csrf-token': 'fetch' } })
+    if(!res.ok) throw new Error(`Could not fetch CSRF token ${res.status}: ${res.statusText}`)
+    document.csrfToken = res.headers.get('x-csrf-token')
+  }
+  return document.csrfToken
+}
+
+/** A helper function to check for errors in the response */
+const _checkResponse = async r => {
+  if(r.ok) return
+  // if failed, construct and throw an error
+  if(r.headers.get('content-type')?.split(';')[0] == 'application/json') {
+    const { data, error:e = data.error } = await r.json(); e.message ??= `HTTP ${r.status}: ${r.statusText}`
+    throw Object.assign (new Error, e)
+  }
+  throw new Error((await r.text()) || `HTTP ${r.status}: ${r.statusText}`)
+}
+
 /** A helper function to unwrap response data */
-const _respond = r => { switch (r.headers.get('content-type')?.split(';')[0]) {
+const _respond = async r => {
+  await _checkResponse(r)
+  switch (r.headers.get('content-type')?.split(';')[0]) {
   case 'application/json': return _unwrap (r.json())
   case 'application/xml': return _unwrap (r.text())
   case 'text/plain': return _unwrap (r.text())

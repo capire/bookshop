@@ -26,10 +26,10 @@ createApp ({ setup() {
     async submitOrder() {
       order.succeeded = order.failed = undefined // reset messages displayed before
       try {
-        let { book, quantity } = order
-        let { stock } = await POST (`submitOrder`, { book, quantity })
+        let { book, quantity } = order, b = details.value
+        await POST (`submitOrder`, { book, quantity })
         order.succeeded = `Successfully ordered ${order.quantity} item(s).`
-        details.value.stock = stock
+        Object.assign (b, await GET `Books/${book}?$select=stock`)
       } catch (e) {
         order.failed = e.message
         throw e

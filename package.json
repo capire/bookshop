@@ -1,6 +1,6 @@
 {
   "name": "@capire/bookshop",
-  "version": "2.0.4",
+  "version": "2.1.11",
   "description": "Our primer sample for getting started in a nutshell.",
   "repository": "https://github.com/capire/bookshop",
   "files": [
@@ -10,22 +10,14 @@
     "index.cds"
   ],
   "devDependencies": {
-    "@cap-js/sqlite": ">=1"
+    "@cap-js/sqlite": ">=2.1.1"
   },
   "dependencies": {
-    "@sap/cds": ">=7",
-    "express": "^4.17.1"
+    "@sap/cds": ">=9.6.2"
   },
   "scripts": {
     "start": "cds-serve",
     "watch": "cds watch"
   },
-  "license": "Apache-2.0",
-  "cds": {
-    "requires": {
-      "[production]": {
-        "auth": "mocked"
-      }
-    }
-  }
+  "license": "Apache-2.0"
 }

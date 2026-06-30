@@ -1,0 +1,55 @@
+@cats = http://localhost:4004/hcql/browse
+@admin = http://localhost:4004/hcql/admin
+
+
+### CatalogService.read Books
+GET {{cats}}/Books { ID, title, author } where author like '%Bro%'
+
+
+### Same with body fragment
+GET {{cats}}/Books
+Content-Type: text/plain
+
+{ ID, title, author } 
+where author like '%Bro%'
+
+
+### Same with POST
+POST {{cats}}
+Content-Type: text/plain
+
+SELECT from Books [where author like '%Bro%'] { 
+  ID, title, author 
+}
+
+
+### AdminService.read Authors 
+POST {{admin}}
+Authorization: Basic alice:
+Content-Type: text/plain
+
+SELECT from Authors { 
+  ID, name, books { 
+    ID, title, 
+    genre.name as genre 
+  } 
+}
+
+
+### Same with body as CQN
+POST {{admin}}
+Authorization: Basic alice:
+Content-Type: application/json
+
+{ "SELECT": {
+  "from": { "ref": [ "Authors" ] },
+  "columns": [
+    { "ref": [ "ID" ] },
+    { "ref": [ "name" ] },
+    { "ref": [ "books" ], "expand": [
+      { "ref": [ "ID" ] },
+      { "ref": [ "title" ] },
+      { "ref": [ "genre", "name" ], "as": "genre" }
+    ]}
+  ]
+}}

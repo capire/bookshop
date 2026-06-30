@@ -9,8 +9,7 @@
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
     {
-      "source": "^/(admin|browse|odata|rest|hcql)/(.*)$",
-      "target": "/$1/$2",
+      "source": "^/(admin|browse|odata|rest|hcql)/",
       "destination": "srv-api",
       "csrfProtection": true
     }

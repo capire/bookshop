@@ -20,3 +20,8 @@ jobs:
     secrets: inherit
     with:
       environment: Production
+
+  publish:
+    needs: [deploy-cf]
+    uses: capire/bookshop/.github/workflows/publish.yml@main
+    secrets: inherit
