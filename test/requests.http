@@ -1,6 +1,6 @@
 
 ### CatalogService.read Books
-GET http://localhost:4004/browse/Books?
+GET http://localhost:4004/odata/v4/browse/Books?
 &$select=ID,title,author
 &$filter=contains(author,'Bro')
 
@@ -20,7 +20,7 @@ Authorization: Basic alice:
 
 
 ### CatalogService.submitOrder()
-POST http://localhost:4004/browse/submitOrder
+POST http://localhost:4004/odata/v4/browse/submitOrder
 Content-Type: application/json
 Authorization: Basic bob:
 
