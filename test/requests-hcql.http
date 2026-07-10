@@ -10,7 +10,7 @@ GET {{cats}}/Books { ID, title, author } where author like '%Bro%'
 GET {{cats}}/Books
 Content-Type: text/plain
 
-{ ID, title, author } 
+{ ID, title, author }
 where author like '%Bro%'
 
 
@@ -18,27 +18,25 @@ where author like '%Bro%'
 POST {{cats}}
 Content-Type: text/plain
 
-SELECT from Books [where author like '%Bro%'] { 
-  ID, title, author 
+SELECT from Books [where author like '%Bro%'] {
+  ID, title, author
 }
 
 
-### AdminService.read Authors 
-POST {{admin}}
-Authorization: Basic alice:
+### AdminService.read Authors
+POST http://localhost:4004/hcql/admin
 Content-Type: text/plain
 
-SELECT from Authors { 
-  ID, name, books { 
-    ID, title, 
-    genre.name as genre 
-  } 
+SELECT from Authors {
+  ID, name, books {
+    ID, title,
+    genre.name as genre
+  }
 }
 
 
 ### Same with body as CQN
-POST {{admin}}
-Authorization: Basic alice:
+POST http://localhost:4004/hcql/admin
 Content-Type: application/json
 
 { "SELECT": {
