@@ -1,16 +1,30 @@
 {
   "welcomeFile": "app/vue/index.html",
-  "authenticationMethod": "none",
+  "authenticationMethod": "route",
   "routes": [
     {
       "source": "^/app/(.*)$",
       "target": "$1",
       "localDir": "resources",
+      "authenticationType": "none",
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
     {
-      "source": "^/(admin|browse|odata|rest|hcql)/",
+      "source": "^/(odata|rest|hcql|browse).*/submitOrder.*$",
       "destination": "srv-api",
+      "authenticationType": "ias",
+      "csrfProtection": true
+    },
+    {
+      "source": "^/admin/",
+      "destination": "srv-api",
+      "authenticationType": "ias",
+      "csrfProtection": true
+    },
+    {
+      "source": "^/(browse|odata|rest|hcql)/",
+      "destination": "srv-api",
+      "authenticationType": "none",
       "csrfProtection": true
     }
   ]
