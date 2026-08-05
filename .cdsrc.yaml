@@ -1,4 +1,0 @@
-cds:
-  requires:
-    "[production]":
-      auth: ias
