@@ -1,15 +1,15 @@
 using { sap.capire.bookshop as my } from '../db/schema';
 
-service CatalogService @(path:'browse') {
+service CatalogService @(path:'browse', requires:'any') {
 
   /** For displaying lists of Books */
-  @readonly @requires: 'any' entity ListOfBooks as projection on Books {
+  @readonly entity ListOfBooks as projection on Books {
     *, currency.symbol as currency,
   }
   excluding { descr };
 
   /** For display in details pages */
-  @readonly @requires: 'any' entity Books as projection on my.Books {
+  @readonly entity Books as projection on my.Books {
     *, // all fields with the following denormalizations:
     author.name as author,
     genre.name as genre,

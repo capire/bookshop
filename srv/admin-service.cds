@@ -1,6 +1,6 @@
 using { sap.capire.bookshop as my } from '../db/schema';
 
-service AdminService @(odata:'/admin') {
+service AdminService @(odata:'/admin', requires:'admin') {
   entity Authors as projection on my.Authors;
   entity Books as projection on my.Books;
   entity Genres as projection on my.Genres;
