@@ -1,7 +1,7 @@
 import { createApp, reactive, ref } from './vue.js'
 import cds from './cap.js'
 
-const { GET, POST } = cds.connect.to ('/rest/browse')
+const { GET, POST } = cds.connect.to ('/hcql/browse')
 const $ = s => document.querySelector (s)
 
 createApp ({ setup() {
@@ -13,12 +13,12 @@ createApp ({ setup() {
   return { books, details, order, stars,
 
     async fetch (terms) {
-      books.value = await GET `ListOfBooks${ terms ? `?$search=${terms}` : '' }`
+      books.value = await GET `ListOfBooks ${ terms ? `where $search('${terms}')` : '' }`
     },
 
     async inspect (index) {
       let b = details.value = books.value [index], ID = order.book = b.ID
-      Object.assign (b, await GET `Books/${ID}?$select=descr,stock`)
+      Object.assign (b, await GET `Books/${ID} { descr, stock }`)
       setTimeout (()=> $('form > input').focus(), 11) // focus input field after rendering
       order.succeeded = order.failed = undefined // reset messages displayed before
     },
