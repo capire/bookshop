@@ -16,7 +16,12 @@
 <body class="small-container", style="margin-top: 70px;">
   <div id='app'>
 
-    <h1> Capire Books </h1>
+    <h1> Capire Books
+      <span style="float:right; font-size:0.5em; font-weight:normal">
+        <a v-if="!user" href="/login" class="login">Login</a>
+        <span v-else> {{ user }} &nbsp;<a href="/logout" class="login">Logout</a> </span>
+      </span>
+    </h1>
 
     <input type="text" placeholder="Search..." @input="fetch($event.target.value)">
 

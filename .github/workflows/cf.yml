@@ -34,10 +34,10 @@ jobs:
           space: ${{ vars.CF_SPACE }}
           username: ${{ vars.CF_USERNAME }}
           password: ${{ secrets.CF_PASSWORD }}
-      - run: npm add -D @sap/cds-dk
-      - run: npx cds add hana,xsuaa
+      - run: npm install -g @sap/cds-dk
+      - run: cds add hana,ias
       - run: npm install
-      - run: npx cds up
+      - run: cds up
 
       - run: cf logs ${{ env.APP_NAME }} --recent
         if: always()

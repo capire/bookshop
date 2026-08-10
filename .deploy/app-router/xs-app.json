@@ -1,16 +1,33 @@
 {
   "welcomeFile": "app/vue/index.html",
-  "authenticationMethod": "none",
+  "authenticationMethod": "route",
+  "logout": {
+    "logoutEndpoint": "/logout",
+    "logoutPage": "/app/vue/logout.html"
+  },
   "routes": [
     {
       "source": "^/app/(.*)$",
       "target": "$1",
       "localDir": "resources",
+      "authenticationType": "none",
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
     {
-      "source": "^/(admin|browse|odata|rest|hcql)/",
+      "source": "^/login/?$",
+      "target": "vue/login.html",
+      "localDir": "resources",
+      "authenticationType": "ias"
+    },
+    {
+      "source": "^/user-api/currentUser$",
+      "service": "sap-approuter-userapi",
+      "authenticationType": "ias"
+    },
+    {
+      "source": "^/(browse|admin|odata|rest|hcql)/",
       "destination": "srv-api",
+      "authenticationType": "none",
       "csrfProtection": true
     }
   ]

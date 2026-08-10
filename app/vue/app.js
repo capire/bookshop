@@ -9,8 +9,14 @@ createApp ({ setup() {
   const stars = [ '☆☆☆☆☆', '★☆☆☆☆', '★★☆☆☆', '★★★☆☆', '★★★★☆', '★★★★★' ]
   const books = ref([]), details = ref()
   const order = reactive({ quantity:1 })
+  const user = ref()
 
-  return { books, details, order, stars,
+  // Reflect current login state (empty for anonymous visitors)
+  fetch('/user-api/currentUser').then(r => r.ok && r.json()).then(u => {
+    if (u && u.name && u.name !== 'anonymous') user.value = u.name
+  }).catch(() => {})
+
+  return { books, details, order, stars, user,
 
     async fetch (terms) {
       books.value = await GET `ListOfBooks${ terms ? `?$search=${terms}` : '' }`
@@ -31,6 +37,9 @@ createApp ({ setup() {
         order.succeeded = `Successfully ordered ${order.quantity} item(s).`
         Object.assign (b, await GET `Books/${book}?$select=stock`)
       } catch (e) {
+        if (e.status === 401 || /401/.test(e.message)) {
+          return window.location = `/login?redirect=${encodeURIComponent(location.pathname)}`
+        }
         order.failed = e.message
         throw e
       }
