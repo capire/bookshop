@@ -19,12 +19,5 @@
     "start": "cds-serve",
     "watch": "cds watch"
   },
-  "license": "Apache-2.0",
-  "cds": {
-    "requires": {
-      "[production]": {
-        "auth": "ias"
-      }
-    }
-  }
+  "license": "Apache-2.0"
 }
