@@ -9,9 +9,9 @@ service CatalogService @(path:'browse') {
   excluding { descr };
 
   /** For display in details pages */
-  @readonly entity Books as projection on my.Books { 
+  @readonly entity Books as projection on my.Books {
     *, // all fields with the following denormalizations:
-    author.name as author, 
+    author.name as author,
     genre.name as genre,
   } excluding { createdBy, modifiedBy };
 
