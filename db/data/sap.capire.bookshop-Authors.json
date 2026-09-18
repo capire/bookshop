@@ -1,0 +1,34 @@
+[
+  {
+    "ID": 101,
+    "name": "Emily Brontë",
+    "dateOfBirth": "1818-07-30",
+    "placeOfBirth": "Thornton, Yorkshire",
+    "dateOfDeath": "1848-12-19",
+    "placeOfDeath": "Haworth, Yorkshire"
+  },
+  {
+    "ID": "107",
+    "name": "Charlotte Brontë",
+    "dateOfBirth": "1818-04-21",
+    "placeOfBirth": "Thornton, Yorkshire",
+    "dateOfDeath": "1855-03-31",
+    "placeOfDeath": "Haworth, Yorkshire"
+  },
+  {
+    "ID": "150",
+    "name": "Edgar Allan Poe",
+    "dateOfBirth": "1809-01-19",
+    "placeOfBirth": "Boston, Massachusetts",
+    "dateOfDeath": "1849-10-07",
+    "placeOfDeath": "Baltimore, Maryland"
+  },
+  {
+    "ID": "170",
+    "name": "Richard Carpenter",
+    "dateOfBirth": "1929-08-14",
+    "placeOfBirth": "King’s Lynn, Norfolk",
+    "dateOfDeath": "2012-02-26",
+    "placeOfDeath": "Hertfordshire, England"
+  }
+]
