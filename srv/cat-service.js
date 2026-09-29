@@ -1,21 +1,17 @@
-const cds = require('@sap/cds')
+import cds from '@sap/cds'
+const { SELECT, UPDATE } = cds.ql
 
-class CatalogService extends cds.ApplicationService { init() {
+
+export class CatalogService extends cds.ApplicationService { init() {
 
   const { Books } = cds.entities ('sap.capire.bookshop')
-  const { ListOfBooks } = this.entities
-
-  // Add some discount for overstocked books
-  this.after('each', ListOfBooks, book => {
-    if (book.stock > 111) book.title += ` -- 11% discount!`
-  })
 
   // Reduce stock of ordered books if available stock suffices
   this.on ('submitOrder', async req => {
 
     // Try to reduce the stock of the ordered book, the good case
     let { book:id, quantity=1 } = req.data
-    let { affected } = await UPDATE (Books,id)
+    let { affected } = await UPDATE.entity (Books,id)
       .with `stock = stock - ${quantity}`
       .where `stock >= ${quantity}`
     if (affected) return //> done, the update was successful
@@ -29,5 +25,3 @@ class CatalogService extends cds.ApplicationService { init() {
   // Delegate requests to the underlying generic service
   return super.init()
 }}
-
-module.exports = CatalogService
