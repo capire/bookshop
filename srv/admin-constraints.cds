@@ -5,12 +5,12 @@ annotate AdminService.Books with {
 
   title @mandatory;
 
-  author @assert: (case 
+  author @assert: (case
     when not exists author then 'Specified Author does not exist'
   end);
 
-  genre @assert: (case 
-    when not exists genre then 'Specified Genre does not exist'
+  genre @assert: (case
+    when genre is not null and not exists genre then 'Specified Genre does not exist'
   end);
 
   price @assert.range: [1,111]; // 1 ... 111 inclusive
@@ -35,7 +35,7 @@ annotate AdminService.Authors with {
 annotate AdminService.Genres with {
 
   name @mandatory;
-  
+
   parent @assert: (case
     when parent == ID then 'A genre cannot be its own parent'
   end);
