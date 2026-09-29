@@ -51,3 +51,25 @@ Content-Type: application/json
     ]}
   ]
 }}
+
+
+### AdminService.insert into Books
+POST http://localhost:4004/hcql/admin
+Content-Type: application/json
+
+{ "INSERT": {
+  "into": { "ref": ["Books"] },
+  "entries": [
+    { "title": "T1", "author": {"ID":101} },
+    { "title": "T2", "author": {"ID":107} }
+  ]
+}}
+
+### AdminService.update Books
+POST http://localhost:4004/hcql/admin
+Content-Type: application/json
+
+{ "UPDATE": {
+  "entity": { "ref": ["Books"] },
+  "with": { "title": {"val": "T1"}, "author.ID": {"val": 101} }
+}}
