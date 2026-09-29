@@ -9,7 +9,6 @@
     "db",
     "index.cds"
   ],
-  "type": "module",
   "devDependencies": {
     "@cap-js/sqlite": ">=2.1.1"
   },

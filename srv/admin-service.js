@@ -1,11 +1,14 @@
-import cds from '@sap/cds'
-const { SELECT } = cds.ql
+const cds = require('@sap/cds')
 
-export class AdminService extends cds.ApplicationService { init(){
-  this.before (['NEW','CREATE'], ['Books','Authors'], async req => {
-    if (req.data.ID) return // skip if ID is already set
-    let {id} = await SELECT.one`max(ID) as id`.from(req.target)
-    req.data.ID = id + 4 // not safe, but ok for demo purposes
-  })
+module.exports = class AdminService extends cds.ApplicationService { init(){
+  this.before (['NEW','CREATE'],'Authors', genid)
+  this.before (['NEW','CREATE'],'Books', genid)
   return super.init()
 }}
+
+/** Generate primary keys for target entity in request */
+async function genid (req) {
+  if (req.data.ID) return
+  const {id} = await SELECT.one.from(req.target).columns('max(ID) as id')
+  req.data.ID = id + 4 // Note: that is not safe! ok for this sample only.
+}
