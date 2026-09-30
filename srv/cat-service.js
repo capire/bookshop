@@ -9,9 +9,10 @@ class CatalogService extends cds.ApplicationService { init() {
 
     // Try to reduce the stock of the ordered book, the good case
     let { book:id, quantity=1 } = req.data
-    let { affected } = await UPDATE (Books,id)
+    let result = await UPDATE (Books,id)
       .with `stock = stock - ${quantity}`
       .where `stock >= ${quantity}`
+    let affected = result.affected || result
     if (affected) return //> done, the update was successful
 
     // The update failed, let's check why, and respond accordingly...
