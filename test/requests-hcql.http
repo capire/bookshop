@@ -23,6 +23,12 @@ SELECT from Books [where author like '%Bro%'] {
 }
 
 
+### Same with POST
+POST {{cats}}
+Content-Type: text/plain
+
+CALL submitOrder with { book:201, quantity: 1 }
+
 ### AdminService.read Authors
 POST http://localhost:4004/hcql/admin
 Content-Type: text/plain
@@ -55,6 +61,17 @@ Content-Type: application/json
 
 ### AdminService.insert into Books
 POST http://localhost:4004/hcql/admin
+Content-Type: text/plain
+
+UPSERT into Books {
+  ID: 311, title: 'T1', author: { ID: 101 }
+},
+{
+  ID: 312, title: 'T2', author: { ID: 107 }
+}
+
+###
+POST http://localhost:4004/hcql/admin
 Content-Type: application/json
 
 { "INSERT": {
@@ -73,3 +90,27 @@ Content-Type: application/json
   "entity": { "ref": ["Books"] },
   "with": { "title": {"val": "T1"}, "author.ID": {"val": 101} }
 }}
+
+
+### AdminService.insert Authors
+POST http://localhost:4004/hcql/admin
+Content-Type: text/plain
+
+INSERT into Authors columns (
+  ID, name, dateOfBirth, dateOfDeath, placeOfBirth, placeOfDeath
+) values (
+  201, 'George Orwell', '1903-06-25', '1950-01-21', 'Motihari, India', 'London, England'
+)
+
+
+###
+GET http://localhost:4004/hcql/admin/?describe=all
+
+###
+GET http://localhost:4004/hcql/browse/?describe=all
+
+###
+GET http://localhost:4114/hcql/travel/?describe=all
+
+###
+GET http://localhost:4114/hcql/flights/?describe=all
