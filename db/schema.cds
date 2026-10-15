@@ -23,8 +23,7 @@ entity Authors : managed {
 }
 
 /** Hierarchically organized Code List for Genres */
-entity Genres : sap.common.CodeList {
-  key name : localized String;
+entity Genres : cuid, sap.common.CodeList {
   parent   : Association to Genres;
   children : Composition of many Genres on children.parent = $self;
 }

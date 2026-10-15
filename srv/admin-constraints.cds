@@ -37,7 +37,7 @@ annotate AdminService.Genres with {
   name @mandatory;
 
   parent @assert: (case
-    when parent == name then 'A genre cannot be its own parent'
+    when parent == ID then 'A genre cannot be its own parent'
   end);
 }
 
