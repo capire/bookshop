@@ -18,7 +18,7 @@ service CatalogService @(path:'browse') {
   action submitOrder (
     book     : Books:ID @mandatory,
     quantity : Integer default 1 @assert.range: [1,_]
-  );
+  ) returns { stock : Integer };
 }
 
 // Serve via HCQL, OData, and REST
