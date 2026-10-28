@@ -2,6 +2,19 @@
 @admin = http://localhost:4004/hcql/admin
 
 
+###
+GET http://localhost:4004/hcql/admin/?describe=all
+
+###
+GET http://localhost:4004/hcql/browse/?describe=all
+
+###
+GET http://localhost:4114/hcql/travel/?describe=all
+
+###
+GET http://localhost:4114/hcql/flights/?describe=all
+
+
 ### CatalogService.read Books
 GET {{cats}}/Books { ID, title, author } where author like '%Bro%'
 
@@ -38,7 +51,7 @@ SELECT from Authors {
     ID, title,
     genre.name as genre
   }
-}
+} where books.genre.name = 'Drama'
 
 
 ### Same with body as CQN
@@ -103,14 +116,92 @@ INSERT into Authors columns (
 )
 
 
-###
-GET http://localhost:4004/hcql/admin/?describe=all
 
 ###
-GET http://localhost:4004/hcql/browse/?describe=all
+GET http://localhost:4004/hcql/admin/Books/201 { ID, stock }
 
 ###
-GET http://localhost:4114/hcql/travel/?describe=all
+PATCH http://localhost:4004/hcql/admin/Books/201
+Content-Type: application/json
+
+{ "stock": 22 }
 
 ###
-GET http://localhost:4114/hcql/flights/?describe=all
+POST http://localhost:4004/hcql/admin
+Content-Type: text/plain
+
+UPDATE Books[201] with { stock: 33 }
+
+###
+POST http://localhost:4004/hcql/admin
+Content-Type: text/plain
+
+SELECT from Authors {
+  ID, name, dateOfBirth, dateOfDeath,
+  years_between(dateOfBirth, dateOfDeath) as lifespan,
+  placeOfBirth, placeOfDeath,
+  count(books.ID) as totalBooks,
+  sum(books.stock) as totalStock,
+  round(avg(books.price)) as avgPrice,
+  min(books.price) as cheapest,
+  max(books.price) as priciest
+}
+WHERE
+  books.stock > 30
+  AND dateOfDeath != null
+GROUP BY
+  ID, name, dateOfBirth, dateOfDeath, placeOfBirth, placeOfDeath
+ORDER BY
+  totalBooks desc, totalStock desc
+LIMIT 8
+
+###
+POST http://localhost:4004/hcql/admin
+Content-Type: text/plain
+
+SELECT from Authors {
+  ID, name, placeOfBirth, dateOfBirth, dateOfDeath,
+  years_between(dateOfBirth, dateOfDeath) as lifespan,
+  books [
+    where price > 9
+    order by stock desc
+    limit 3
+  ] {
+    ID, title, price, stock, currency {
+      code, symbol, name, minorUnit
+    },
+    genre {
+      name, descr, parent {
+        name, parent {
+          name
+        }
+      }
+    }
+  }
+}
+WHERE exists books [stock > 30] AND dateOfDeath != null
+
+
+###
+GET http://localhost:4004/hcql/admin/Books/335 { ID, title, author.name }
+
+###
+POST http://localhost:4004/hcql/admin/Books
+Content-Type: application/json
+
+{ "title": "INSERTED", "author": {"ID":101} }
+
+###
+PUT http://localhost:4004/hcql/admin/Books
+Content-Type: application/json
+
+{ "ID":335, "title": "UPSERTED", "author": {"ID":101} }
+
+###
+PATCH http://localhost:4004/hcql/admin/Books/335
+Content-Type: application/json
+
+{ "title": "UPDATED", "author": {"ID":107} }
+
+###
+DELETE http://localhost:4004/hcql/admin/Books/335
