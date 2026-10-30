@@ -1,4 +1,4 @@
-import { createApp, reactive, ref } from './vue.js'
+import { createApp, reactive, ref } from "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
 import cds from './cap.js'
 
 const { GET, POST } = cds.connect.to ('/rest/browse')
@@ -13,12 +13,16 @@ createApp ({ setup() {
   return { books, details, order, stars,
 
     async fetch (terms) {
-      books.value = await GET `ListOfBooks${ terms ? `?$search=${terms}` : '' }`
+      let q = `ListOfBooks`
+      if (terms) q += `?$search=${terms}`
+      books.value = await GET(q)
     },
 
     async inspect (index) {
-      let b = details.value = books.value [index], ID = order.book = b.ID
-      Object.assign (b, await GET `Books/${ID}?$select=descr,stock`)
+      const {ID} = details.value = books.value [index]
+      let { descr, stock } = await GET `Books/${ID}?$select=descr,stock`
+      details.value.descr = descr
+      details.value.stock = stock
       setTimeout (()=> $('form > input').focus(), 11) // focus input field after rendering
       order.succeeded = order.failed = undefined // reset messages displayed before
     },
@@ -26,10 +30,10 @@ createApp ({ setup() {
     async submitOrder() {
       order.succeeded = order.failed = undefined // reset messages displayed before
       try {
-        let { book, quantity } = order, b = details.value
-        await POST (`submitOrder`, { book, quantity })
-        order.succeeded = `Successfully ordered ${order.quantity} item(s).`
-        Object.assign (b, await GET `Books/${book}?$select=stock`)
+        const { ID:book } = details.value, { quantity } = order
+        const { stock } = await POST (`submitOrder`, { book, quantity })
+        order.succeeded = `Successfully ordered ${quantity} item(s).`
+        details.value.stock = stock
       } catch (e) {
         order.failed = e.message
         throw e
