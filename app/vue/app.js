@@ -1,7 +1,6 @@
 import { createApp, reactive, ref } from "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
-import cds from './cap.js'
-
-const { GET, POST } = cds.connect.to ('/rest/browse')
+import * as cds from '@cap.core/connect'
+const { GET, POST } = await cds.connect.to `CatalogService`
 const $ = s => document.querySelector (s)
 
 createApp ({ setup() {
@@ -13,14 +12,14 @@ createApp ({ setup() {
   return { books, details, order, stars,
 
     async fetch (terms) {
-      let q = `ListOfBooks`
-      if (terms) q += `?$search=${terms}`
-      books.value = await GET(q)
+      const q = GET `ListOfBooks` .orderBy `title` .limit(10)
+      if (terms) q.where`$search(${terms})`
+      books.value = await q
     },
 
     async inspect (index) {
       const {ID} = details.value = books.value [index]
-      let { descr, stock } = await GET `Books/${ID}?$select=descr,stock`
+      let { descr, stock } = await GET `descr, stock` .from (`Books`,ID)
       details.value.descr = descr
       details.value.stock = stock
       setTimeout (()=> $('form > input').focus(), 11) // focus input field after rendering
