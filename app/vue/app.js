@@ -1,8 +1,7 @@
 import { createApp, reactive, ref } from "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
-const $ = s => document.querySelector (s)
-
 import * as cds from '@cap.core/connect'
 const { GET, POST } = await cds.connect.to `CatalogService`
+const $ = s => document.querySelector (s)
 
 createApp ({ setup() {
 
@@ -20,13 +19,7 @@ createApp ({ setup() {
 
     async inspect (index) {
       const {ID} = details.value = books.value [index]
-      // let [{ descr, stock }] = await GET `descr, stock` .from `Books` .where `ID = ${ID}`
-      // let { descr, stock } = await GET `one descr, stock from Books where ID = ${ID}`
-      // let { descr, stock } = await GET `descr, stock from Books [${ID}]`
       let { descr, stock } = await GET `descr, stock` .from (`Books`,ID)
-      // let { descr, stock } = await GET `Books [${ID}] { descr, stock }`
-      // let { descr, stock } = await GET (`Books`,ID,`{ descr, stock }`)
-      // let { descr, stock } = await GET (`Books`,ID,`descr, stock`)
       details.value.descr = descr
       details.value.stock = stock
       setTimeout (()=> $('form > input').focus(), 11) // focus input field after rendering
@@ -38,8 +31,8 @@ createApp ({ setup() {
       try {
         const { ID:book } = details.value, { quantity } = order
         const { stock } = await POST (`submitOrder`, { book, quantity })
-        details.value.stock = stock
         order.succeeded = `Successfully ordered ${quantity} item(s).`
+        details.value.stock = stock
       } catch (e) {
         order.failed = e.message
         throw e
