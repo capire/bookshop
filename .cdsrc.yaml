@@ -2,5 +2,9 @@ cds:
   requires:
     "[production]":
       auth: mocked # as a sample app run with mocked auth also in production
+
   features:
     legacy_db_results: false
+
+  cdsc:
+    docs: true

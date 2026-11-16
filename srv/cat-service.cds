@@ -1,5 +1,10 @@
 using { sap.capire.bookshop as my } from '../db/schema';
 
+/**
+ * Catalog service for browsing and buying books by visitors/end users.
+ * The entities exposed are tailored and denormalized projections that
+ * exclude internal-only fields.
+ */
 service CatalogService @(path:'browse') {
 
   /** The preferred entity to display lists of Books */
@@ -7,7 +12,7 @@ service CatalogService @(path:'browse') {
     *, currency.symbol as currency,
   } excluding { descr };
 
-  /** For fetching all details of a single Book */
+  /** For reading details of a single Book */
   @readonly entity Books as projection on my.Books {
     *, // all fields with the following denormalizations:
     author.name as author,

@@ -3,10 +3,10 @@
 
 
 ###
-GET http://localhost:4004/hcql/admin/?describe=all
+GET {{admin}}/?describe=all
 
 ###
-GET http://localhost:4004/hcql/browse/?describe=all
+GET {{cats}}/?describe=all
 
 ###
 GET http://localhost:4114/hcql/travel/?describe=all
@@ -16,15 +16,22 @@ GET http://localhost:4114/hcql/flights/?describe=all
 
 
 ### CatalogService.read Books
-GET {{cats}}/Books { ID, title, author } where author like '%Bro%'
+GET {{cats}}/Books?$select=ID,title,author&$where=author%20like%20%27%25Bro%25%27
 
 
-### Same with body fragment
-GET {{cats}}/Books
-Content-Type: text/plain
+### Same with JSON CQL and positional bindings
+POST {{cats}}
+Content-Type: application/json
 
-{ ID, title, author }
-where author like '%Bro%'
+{
+  "cql": "SELECT from Books { ID, title, author } where author like ?",
+  "args": ["%Bro%"]
+}
+
+
+### CatalogService.read Books with filtering, ordering, paging, and total count
+GET {{cats}}/Books?$select=ID,title,stock&$filter=stock%20%3E%200&$orderby=title&$top=10&$skip=0
+X-Total-Count: true
 
 
 ### Same with POST
@@ -36,14 +43,15 @@ SELECT from Books [where author like '%Bro%'] {
 }
 
 
-### Same with POST
-POST {{cats}}
-Content-Type: text/plain
+### CatalogService.submitOrder
+POST {{cats}}/submitOrder
+Content-Type: application/json
+Authorization: Basic bob:
 
-CALL submitOrder with { book:201, quantity: 1 }
+{ "book": 201, "quantity": 1 }
 
 ### AdminService.read Authors
-POST http://localhost:4004/hcql/admin
+POST {{admin}}
 Content-Type: text/plain
 
 SELECT from Authors {
@@ -54,8 +62,8 @@ SELECT from Authors {
 } where books.genre.name = 'Drama'
 
 
-### Same with body as CQN
-POST http://localhost:4004/hcql/admin
+### AdminService.read Authors with direct CQN
+POST {{admin}}
 Content-Type: application/json
 
 { "SELECT": {
@@ -72,8 +80,20 @@ Content-Type: application/json
 }}
 
 
-### AdminService.insert into Books
-POST http://localhost:4004/hcql/admin
+### AdminService.read one Book with wrapped CQN
+POST {{admin}}
+Content-Type: application/json
+
+{ "cqn": { "SELECT": {
+  "one": true,
+  "from": { "ref": ["Books"] },
+  "columns": [{ "ref": ["ID"] }, { "ref": ["title"] }],
+  "where": [{ "ref": ["ID"] }, "=", { "val": 201 }]
+}}}
+
+
+### AdminService.upsert Books with CQL
+POST {{admin}}
 Content-Type: text/plain
 
 UPSERT into Books {
@@ -83,57 +103,64 @@ UPSERT into Books {
   ID: 312, title: 'T2', author: { ID: 107 }
 }
 
-###
-POST http://localhost:4004/hcql/admin
+### AdminService.insert Books with CQN
+POST {{admin}}
 Content-Type: application/json
 
 { "INSERT": {
   "into": { "ref": ["Books"] },
   "entries": [
-    { "title": "T1", "author": {"ID":101} },
-    { "title": "T2", "author": {"ID":107} }
+    { "ID": 313, "title": "T1", "author": {"ID":101} },
+    { "ID": 314, "title": "T2", "author": {"ID":107} }
   ]
 }}
 
 ### AdminService.update Books
-POST http://localhost:4004/hcql/admin
+POST {{admin}}
 Content-Type: application/json
 
 { "UPDATE": {
   "entity": { "ref": ["Books"] },
-  "with": { "title": {"val": "T1"}, "author.ID": {"val": 101} }
+  "data": { "title": "T1", "author_ID": 101 },
+  "where": [{ "ref": ["ID"] }, "=", { "val": 313 }]
 }}
 
 
 ### AdminService.insert Authors
-POST http://localhost:4004/hcql/admin
+POST {{admin}}
 Content-Type: text/plain
 
-INSERT into Authors columns (
-  ID, name, dateOfBirth, dateOfDeath, placeOfBirth, placeOfDeath
-) values (
-  201, 'George Orwell', '1903-06-25', '1950-01-21', 'Motihari, India', 'London, England'
-)
+INSERT into Authors {
+  ID: 201, name: 'George Orwell',
+  dateOfBirth: '1903-06-25', dateOfDeath: '1950-01-21',
+  placeOfBirth: 'Motihari, India', placeOfDeath: 'London, England'
+}
 
 
 
 ###
-GET http://localhost:4004/hcql/admin/Books/201 { ID, stock }
+GET {{admin}}/Books/201?$select=ID,stock
 
 ###
-PATCH http://localhost:4004/hcql/admin/Books/201
+POST {{admin}}
+Content-Type: text/plain
+
+SELECT one from Books { ID, stock } where ID = 201
+
+###
+PATCH {{admin}}/Books/201
 Content-Type: application/json
 
 { "stock": 22 }
 
 ###
-POST http://localhost:4004/hcql/admin
+POST {{admin}}
 Content-Type: text/plain
 
 UPDATE Books[201] with { stock: 33 }
 
 ###
-POST http://localhost:4004/hcql/admin
+POST {{admin}}
 Content-Type: text/plain
 
 SELECT from Authors {
@@ -156,7 +183,7 @@ ORDER BY
 LIMIT 8
 
 ###
-POST http://localhost:4004/hcql/admin
+POST {{admin}}
 Content-Type: text/plain
 
 SELECT from Authors {
@@ -183,25 +210,25 @@ WHERE exists books [stock > 30] AND dateOfDeath != null
 
 
 ###
-GET http://localhost:4004/hcql/admin/Books/335 { ID, title, author.name }
+GET {{admin}}/Books/335?$select=ID,title,author.name
 
 ###
-POST http://localhost:4004/hcql/admin/Books
+POST {{admin}}/Books
 Content-Type: application/json
 
-{ "title": "INSERTED", "author": {"ID":101} }
+{ "ID":335, "title": "INSERTED", "author": {"ID":101} }
 
 ###
-PUT http://localhost:4004/hcql/admin/Books
+PUT {{admin}}/Books/335
 Content-Type: application/json
 
 { "ID":335, "title": "UPSERTED", "author": {"ID":101} }
 
 ###
-PATCH http://localhost:4004/hcql/admin/Books/335
+PATCH {{admin}}/Books/335
 Content-Type: application/json
 
 { "title": "UPDATED", "author": {"ID":107} }
 
 ###
-DELETE http://localhost:4004/hcql/admin/Books/335
+DELETE {{admin}}/Books/335
